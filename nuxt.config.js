@@ -20,7 +20,9 @@ export default {
     ],
 
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-    plugins: [],
+    plugins: [
+        "~/plugins/vuelidate.ts"
+    ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
     components: true,
@@ -31,19 +33,21 @@ export default {
         '@nuxt/typescript-build',
         '@nuxt/postcss8',
         '@nuxtjs/fontawesome',
-        {
-            component: 'fa',
-            icons: {
-                solid: [
-                    'faHome'
-                ]
-            }
-        }
     ],
+    fontawesome: {
+        icons: {
+            solid: ['faComputer', 'faTape'],
+            regular: ['faStar'],
+        }
+    },
 
     serverMiddleware: [
         { path: '/api/', handler: '~/api/index.ts' },
     ],
+
+    proxy: {
+        '/api': 'http://localhost:8080',
+    },
 
     // Modules: https://go.nuxtjs.dev/config-modules
     modules: [],

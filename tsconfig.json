@@ -15,7 +15,11 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": ["@nuxt/types", "@types/node"]
+    "types": ["@nuxt/types", "@types/node", "@types/socket.io"],
+    "jsx": "preserve",
   },
-  "exclude": ["node_modules", ".nuxt", "dist"]
+  "exclude": ["node_modules", ".nuxt", "dist"],
+  "vueCompilerOptions": {
+    "experimentalDisableTemplateSupport": true
+  }
 }
