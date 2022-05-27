@@ -6,6 +6,15 @@
         <span class="mx-4">管理者</span>
       </div>
       <div class="flex items-center justify-end w-full p-4 font-semibold">
+        <div :class="{active: mode === 'connectWord'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4" @click="chgMode('connectWord')">
+          <font-awesome-icon :icon="['fa', 'tape']" />
+        </div>
+        <div :class="{active: mode === 'lineUp'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4" @click="chgMode('lineUp')">
+          <font-awesome-icon :icon="['fa', 'bars-staggered']" />
+        </div>
+        <div :class="{active: mode === 'choices'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4" @click="chgMode('choices')">
+          <font-awesome-icon :icon="['fa', 'square-check']" />
+        </div>
         <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4" @click="visible">
           <font-awesome-icon v-if="visiblity" :icon="['fa', 'eye']" />
           <font-awesome-icon v-else :icon="['fa', 'eye-slash']" />
@@ -28,7 +37,7 @@
       </div>
     </main>
     <footer class="fixed bottom-0 flex items-center justify-center p-4 font-semibold w-full bg-gray-100">
-      <textarea v-model="text" class="appearance-none w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" placeholder="もんだい" ref="text"></textarea>
+      <textarea v-model="text" class="appearance-none h-full w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" placeholder="もんだい" ref="text" @keydown.enter.shift="submit"></textarea>
       <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="submit">
         送信
       </button>
@@ -57,6 +66,7 @@ export default Vue.extend({
       comments: string,
       messages: IMessage[],
       visiblity: boolean,
+      mode: string,
   } {
     return {
       name: '',
@@ -69,6 +79,7 @@ export default Vue.extend({
       comments: '',
       messages: [],
       visiblity: true,
+      mode: 'connectWord'
     }
   },
   mounted() {
@@ -95,6 +106,7 @@ export default Vue.extend({
       this.socket.emit('question', this.text)
     },
     show(user: string, text: string) {
+      if (text === '') return
       const message: IMessage = {
         id: this.messages.length + 1,
         user,
@@ -116,6 +128,9 @@ export default Vue.extend({
     visible() {
       this.visiblity = !this.visiblity 
       this.socket.emit('visible', this.visiblity)
+    },
+    chgMode(mode: string) {
+      this.mode = mode
     }
   }
 })
@@ -153,6 +168,11 @@ main > .question {
   font-size: .85rem;
   line-height: 1.3;
   transition: 0.3s ease-in;
+}
+
+.active {
+  background-color: #e76f51;
+  color: #fff;
 }
 </style>
 

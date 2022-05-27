@@ -33,7 +33,7 @@ export default Vue.extend({
   validations: {
     name: {
       required,
-      maxLength: maxLength(8)
+      maxLength: maxLength(20)
     },
   },
   methods: {

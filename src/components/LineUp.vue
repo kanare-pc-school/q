@@ -2,8 +2,8 @@
   <div class="relative">
     <header class="sticky top-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
-        <font-awesome-icon :icon="['fa', 'tape']" />
-        <span class="mx-4">つなげる</span>
+        <font-awesome-icon :icon="['fa', 'bars-staggered']" />
+        <span class="mx-4">ならべる</span>
       </div>
       <div class="flex items-center justify-end w-full p-4 font-semibold">
         <img class="cursor-pointer shadow rounded-full h-10 w-10" :src="img" @click="logout">
@@ -12,14 +12,12 @@
     </header>
     <main class="sticky overflow-y-auto">
       <div class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      <div class="flex flex-wrap items-center mx-8 my-4">
-        <div v-if="messages.length === 0"></div>
-        <div v-else v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
-          <span class="text-lg font-semibold">
-            <span v-if="visiblity">{{ message.text }}</span>
-            <span v-else>{{ hide(message.text) }}</span>
-            <span class="tooltip" :style="message.color">{{ message.user }}</span>
-          </span>
+      <div class="flex flex-col items-center mx-8 my-4">
+        <div v-if="users.length === 0"></div>
+        <div v-else v-for="user in users" :key="user.id" class="relative flex items-center mt-4 w-full">
+          <img class="mx-4 h-16 w-16" :src="user.img">
+          <div class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
+          <div class="break-all">{{user.text}}</div>
         </div>
       </div>
     </main>
@@ -41,11 +39,11 @@
 import Vue from 'vue'
 import { io } from 'socket.io-client'
 
-interface IMessage {
+interface IUser {
   id: number,
-  user: string,
+  img: string,
+  name: string,
   text: string,
-  color: string,
 }
 
 export default Vue.extend({
@@ -56,7 +54,7 @@ export default Vue.extend({
       question: string,
       text: string,
       comments: string,
-      messages: IMessage[],
+      users: IUser[],
       visiblity: boolean,
   } {
     return {
@@ -68,50 +66,51 @@ export default Vue.extend({
       question: '',
       text: '',
       comments: '',
-      messages: [],
+      users: [],
       visiblity: true,
     }
   },
   mounted() {
     this.name = (this.$route.query.name) as string
     this.img = this.$config.avatarURL + this.name + '.svg'
-    this.socket.on('message', (user: string, text: string) => {
-      this.show(user, text)
+    this.socket.on('message', (name: string, text: string) => {
+      this.show(name, text)
     })
     this.socket.on('question', (question: string) => {
       this.question = question.replace(/\n/g,'<br/>')
     })
     this.socket.on('trash', () => {
       this.question = ''
-      this.messages = []
+      this.users.forEach((user: IUser) => {
+        user.text = ''
+      })
+      this.socket.emit('message', this.name, '')
     })
     this.socket.on('visible', (visiblity: boolean) => {
       this.visiblity = visiblity
     })
     const m = this.$refs.text as HTMLInputElement
     m.focus()
+    this.socket.emit('message', this.name, '')
   },
   methods: {
     submit() {
       this.socket.emit('message', this.name, this.text)
       this.text = ''
     },
-    show(user: string, text: string) {
-      if (text === '') return
-      const message: IMessage = {
-        id: this.messages.length + 1,
-        user,
-        text,
-        color: 'background-color: ' + this.getColor(user)
+    show(name: string, text: string) {
+      const target = this.users.filter((user: IUser) => user.name === name)
+      if (target.length === 0) {
+        const user: IUser = {
+          id: this.users.length + 1,
+          img: this.$config.avatarURL + name + '.svg',
+          name,
+          text
+        }
+        this.users.push(user)
+      } else {
+        target[0].text = target[0].text + text
       }
-      this.messages.push(message)
-      const main = this.$el.querySelector('main')
-      if (main) main.scrollTop = main.scrollHeight
-    },
-    getColor(user: string) {
-      const n = Array.from(user).map(ch => ch.charCodeAt(0)).reduce((a, b) => a + b)
-      const colorAngle = (n * n) % 360
-      return `hsl(${colorAngle}, 80%, 64%)`
     },
     hide(text: string): string {
       let kome = ''

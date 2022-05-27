@@ -15,7 +15,7 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": ["@nuxt/types", "@types/node", "@types/socket.io"],
+    "types": ["@nuxt/types", "@types/node"],
     "jsx": "preserve",
   },
   "exclude": ["node_modules", ".nuxt", "dist"],

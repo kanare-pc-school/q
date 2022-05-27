@@ -1,5 +1,5 @@
 <template>
-  <ConnectWords />
+  <LineUp />
 </template>
 
 <script lang="ts">
