@@ -1,15 +1,11 @@
 <template>
-  <div>
-    <transition name="slide-fade">
-      <Nuxt />
-    </transition>
-  </div>
+  <ConnectWords />
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 
 export default Vue.extend({
-  name: 'LayoutPage',
+  name: 'UserPage',
 })
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <AdminFrame />
+  <AdminTools />
 </template>
 
 <script lang="ts">

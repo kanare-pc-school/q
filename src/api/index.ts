@@ -7,12 +7,22 @@ const io = require('socket.io')(http)
 app.use(express.json())
 
 io.on('connection', (socket: any) => {
-  socket.on('sender', (user: string, msg: string) => {
-    io.emit('reciever', user, msg)
+  socket.on('message', (user: string, text: string) => {
+    console.info(user, text)
+    io.emit('message', user, text)
+  })
+  socket.on('question', (question: string) => {
+    io.emit('question', question)
+  })
+  socket.on('trash', () => {
+    io.emit('trash')
+  })
+  socket.on('visible', (visible: boolean) => {
+    io.emit('visible', visible)
   })
 })
 
-http.listen(8080)
+http.listen(process.env.API_PORT)
 
 export default {
   path: '/api/',

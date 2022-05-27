@@ -36,7 +36,7 @@ export default {
     ],
     fontawesome: {
         icons: {
-            solid: ['faComputer', 'faTape'],
+            solid: ['faComputer', 'faTape', 'faChalkboardUser', 'faTrash', 'faEye', 'faEyeSlash'],
             regular: ['faStar'],
         }
     },
@@ -46,7 +46,7 @@ export default {
     ],
 
     proxy: {
-        '/api': 'http://localhost:8080',
+        '/api': process.env.API_URL || 'http://localhost:8888',
     },
 
     // Modules: https://go.nuxtjs.dev/config-modules
@@ -65,7 +65,16 @@ export default {
     srcDir: 'src/',
 
     server: {
-        port: 8080,
+        port: process.env.BASE_PORT || 8080,
         host: '0.0.0.0',
     },
+
+    publicRuntimeConfig: {
+        baseURL: process.env.BASE_URL || 'http://localhost:8080',
+        apiURL: process.env.API_URL || 'http://localhost:8888',
+        avatarURL: process.env.AVATAR_URL || 'https://avatars.dicebear.com/api/adventurer/',
+      },
+      privateRuntimeConfig: {
+        secret: process.env.SECRET_KEY,
+      }
 }
