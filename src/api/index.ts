@@ -20,6 +20,15 @@ io.on('connection', (socket: any) => {
   socket.on('visible', (visible: boolean) => {
     io.emit('visible', visible)
   })
+  socket.on('mode', (mode: string) => {
+    io.emit('mode', mode)
+  })
+  socket.on('marking', (text: string) => {
+    io.emit('marking', text)
+  })
+  socket.on('logout', () => {
+    io.emit('logout')
+  })
 })
 
 http.listen(process.env.API_PORT)

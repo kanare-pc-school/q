@@ -14,10 +14,11 @@
       <div class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
       <div class="flex flex-col items-center mx-8 my-4">
         <div v-if="users.length === 0"></div>
-        <div v-else v-for="user in users" :key="user.id" class="relative flex items-center mt-4 w-full">
-          <img class="mx-4 h-16 w-16" :src="user.img">
-          <div class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
-          <div class="break-all">{{user.text}}</div>
+        <div v-else v-for="user in users" :key="user.id" class="relative flex items-center mt-4 mb-2 w-full">
+          <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
+          <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
+          <div v-if="visiblity" class="break-all">{{user.text}}</div>
+          <div v-else class="break-all">{{hide(user.text)}}</div>
         </div>
       </div>
     </main>
@@ -99,6 +100,7 @@ export default Vue.extend({
       this.text = ''
     },
     show(name: string, text: string) {
+      if (!name) return
       const target = this.users.filter((user: IUser) => user.name === name)
       if (target.length === 0) {
         const user: IUser = {
@@ -140,17 +142,16 @@ main > .question {
   min-height: 7.5rem;
 }
 
-.tooltip {
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem 0.75rem;
-  white-space: nowrap;
-  font-size: .85rem;
-  line-height: 1.3;
-  transition: 0.3s ease-in;
+img.active {
+  background-color: #e76f51!important;
+  color: #fff!important;
+  border-radius: 50%;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, .4);
+  padding-top: 5px;
+}
+
+div.active {
+  font-weight: 700;
 }
 </style>
 

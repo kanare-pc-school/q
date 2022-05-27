@@ -75,8 +75,8 @@ export default Vue.extend({
   mounted() {
     this.name = (this.$route.query.name) as string
     this.img = this.$config.avatarURL + this.name + '.svg'
-    this.socket.on('message', (user: string, text: string) => {
-      this.show(user, text)
+    this.socket.on('message', (name: string, text: string) => {
+      this.show(name, text)
     })
     this.socket.on('question', (question: string) => {
       this.question = question.replace(/\n/g,'<br/>')
@@ -96,13 +96,13 @@ export default Vue.extend({
       this.socket.emit('message', this.name, this.text)
       this.text = ''
     },
-    show(user: string, text: string) {
+    show(name: string, text: string) {
       if (text === '') return
       const message: IMessage = {
         id: this.messages.length + 1,
-        user,
+        user: name,
         text,
-        color: 'background-color: ' + this.getColor(user)
+        color: 'background-color: ' + this.getColor(name)
       }
       this.messages.push(message)
       const main = this.$el.querySelector('main')

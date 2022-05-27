@@ -36,7 +36,7 @@ export default {
     ],
     fontawesome: {
         icons: {
-            solid: ['faComputer', 'faTape', 'faBarsStaggered', 'faSquareCheck', 'faChalkboardUser', 'faTrash', 'faEye', 'faEyeSlash'],
+            solid: ['faComputer', 'faTape', 'faBarsStaggered', 'faSquareCheck', 'faChalkboardUser', 'faTrash', 'faEye', 'faEyeSlash', 'faArrowRightFromBracket'],
             regular: ['faStar'],
         }
     },
