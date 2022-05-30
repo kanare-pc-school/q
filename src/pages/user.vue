@@ -11,6 +11,7 @@ import lineUp from '../components/LineUp.vue'
 import choiceAnswer from '../components/choiceAnswer.vue'
 
 export default Vue.extend({
+  name: 'UserPage',
   components: {
     connectWords,
     lineUp,
@@ -32,6 +33,5 @@ export default Vue.extend({
       this.$router.push('/')
     })
   },
-  name: 'UserPage',
 })
 </script>
