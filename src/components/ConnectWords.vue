@@ -11,17 +11,18 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <div class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      <div class="flex flex-wrap items-center mx-8 my-4">
-        <div v-if="messages.length === 0"></div>
-        <div v-else v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
+      <transition name="question">
+        <div v-show="this.question" class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
+      </transition>
+      <transition-group name="message" tag="div" class="flex flex-wrap items-center mx-8 my-4">
+        <div v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
           <span class="text-lg font-semibold">
             <span v-if="visiblity">{{ message.text }}</span>
             <span v-else>{{ hide(message.text) }}</span>
             <span class="tooltip" :style="message.color">{{ message.user }}</span>
           </span>
         </div>
-      </div>
+      </transition-group>
     </main>
     <footer class="fixed bottom-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-start w-full p-4 font-semibold">

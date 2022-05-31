@@ -11,22 +11,21 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <div class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      <div class="flex flex-col items-center mx-8 my-4">
-        <div v-if="users.length === 0"></div>
-        <div v-else v-for="user in users" :key="user.id" class="relative flex items-center mt-4 mb-2 w-full">
+      <transition name="fadein">
+        <div v-show="this.question" class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
+      </transition>
+      <transition-group name="fadein" tag="div" class="flex flex-col items-center mx-8 my-4">
+        <div v-for="(user, i) in users" :key="i" class="relative flex items-center mt-4 mb-2 w-full">
           <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
           <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
-          <div v-if="visiblity" class="break-all">{{user.text}}</div>
-          <div v-else class="break-all">{{hide(user.text)}}</div>
+          <transition-group name="message" tag="div" class="flex items-center">
+            <div v-for="(t, i) in user.text" :key="i">{{t}}</div>
+          </transition-group>
         </div>
-      </div>
+      </transition-group>
     </main>
-    <footer class="fixed bottom-0 flex content-between w-full bg-gray-100">
-      <div class="flex items-center justify-start w-full p-4 font-semibold">
-        <span class="mx-2">{{comments}}</span>
-      </div>
-      <div class="flex items-center justify-end w-full p-4 font-semibold">
+    <footer class="fixed bottom-0 flex content-center w-full bg-gray-100">
+      <div class="flex items-center justify-center w-full p-4 font-semibold">
         <input v-model="text" class="appearance-none w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" type="text" placeholder="メッセージ" @keydown.enter="submit" ref="text">
         <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="submit">
           送信
@@ -41,10 +40,9 @@ import Vue from 'vue'
 import { io } from 'socket.io-client'
 
 interface IUser {
-  id: number,
   img: string,
   name: string,
-  text: string,
+  text: string[],
 }
 
 export default Vue.extend({
@@ -83,7 +81,7 @@ export default Vue.extend({
     this.socket.on('trash', () => {
       this.question = ''
       this.users.forEach((user: IUser) => {
-        user.text = ''
+        user.text = []
       })
       this.socket.emit('message', this.name, '')
     })
@@ -104,14 +102,15 @@ export default Vue.extend({
       const target = this.users.filter((user: IUser) => user.name === name)
       if (target.length === 0) {
         const user: IUser = {
-          id: this.users.length + 1,
           img: this.$config.avatarURL + name + '.svg',
           name,
-          text
+          text: text.split('')
         }
         this.users.push(user)
       } else {
-        target[0].text = target[0].text + text
+        text.split('').forEach((t) => {
+          target[0].text.push(t)
+        })
       }
     },
     hide(text: string): string {

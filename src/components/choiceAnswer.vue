@@ -11,10 +11,11 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <div class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      <div class="flex items-center mx-8 my-4">
-        <div v-if="users.length === 0"></div>
-        <div v-else v-for="user in users" :key="user.id" class="box">
+      <transition name="fadein">
+        <div v-show="this.question" class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
+      </transition>
+      <transition-group name="fadein" tag="div" class="flex items-center mx-8 my-4">
+        <div v-for="(user, i) in users" :key="i" class="box">
           <div :class="{active: user.name === name}" class="h">
             <img :src="user.img">
             <span>{{user.name}}</span>
@@ -25,7 +26,7 @@
             <img :class="{hide: !user.correct}" class="circle" :src="require('@/assets/images/circle.svg')" />
           </div>
         </div>
-      </div>
+      </transition-group>
     </main>
     <footer class="fixed bottom-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
@@ -86,6 +87,11 @@ export default Vue.extend({
       visiblity: true,
       selected: '',
     }
+  },
+  watch: {
+    selected: (u) => {
+      console.info(u)
+    } 
   },
   mounted() {
     this.name = (this.$route.query.name) as string

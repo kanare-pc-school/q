@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.fadein-enter-active {
+    animation: fade-in 1s;
+  }
+  .fadein-leave-active {
+    animation: fade-in .25s reverse;
+  }
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .message-enter-active {
+    animation: bounce-in .5s;
+  }
+  .message-leave-active {
+    animation: bounce-in .25s reverse;
+  }
+  @keyframes bounce-in {
+    0% {
+      transform: translateY(-2.5rem);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
