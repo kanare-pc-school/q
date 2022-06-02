@@ -12,8 +12,11 @@
         <div :class="{active: mode === 'lineUp'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="chgMode('lineUp')">
           <font-awesome-icon :icon="['fa', 'bars-staggered']" />
         </div>
-        <div :class="{active: mode === 'choiceAnswer'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="chgMode('choiceAnswer')">
+        <div :class="{active: mode === 'choiceAnswer'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-8 cursor-pointer bg-white" @click="chgMode('choiceAnswer')">
           <font-awesome-icon :icon="['fa', 'square-check']" />
+        </div>
+        <div :class="{active: mode === 'edit'}"  class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-8 cursor-pointer bg-white" @click="edit">
+          <font-awesome-icon :icon="['fa', 'file-pen']" />
         </div>
         <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="visible">
           <font-awesome-icon v-if="visiblity" :icon="['fa', 'eye']" />
@@ -33,7 +36,16 @@
           <div v-show="question" class="font-semibold" v-html="question"></div>
         </transition>
       </div>
-      <transition-group name="message" v-if="mode === 'connectWords'" tag="div" class="flex flex-wrap items-center mx-8 my-4">
+      <transition-group name="fadein" v-if="mode === 'edit'" tag="div" class="flex flex-col items-center mx-8 my-4">
+        <div v-for="(q, i) in questions" :key="q.no" class="flex items-center mt-4 mb-2 w-full">
+          <div>{{q.no}}</div>
+          <textarea class="appearance-none h-full w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" ref="text">{{q.text}}</textarea>
+          <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button">
+            送信
+          </button>
+        </div>
+      </transition-group>
+      <transition-group name="message" v-else-if="mode === 'connectWords'" tag="div" class="flex flex-wrap items-center mx-8 my-4">
         <div v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
           <span class="text-lg font-semibold">
             <span v-if="visiblity">{{ message.text }}</span>
@@ -126,7 +138,7 @@ export default Vue.extend({
       visiblity: boolean,
       mode: string,
       selected: string,
-      questions: any
+      questions: any,
   } {
     return {
       name: '',
@@ -142,7 +154,7 @@ export default Vue.extend({
       visiblity: true,
       mode: 'connectWords',
       selected: '',
-      questions: []
+      questions: [],
     }
   },
   mounted() {
@@ -257,6 +269,10 @@ export default Vue.extend({
     },
     setQuestion(_num: number, question: string) {
       this.text = question
+    },
+    edit() {
+      this.mode = 'edit'
+      this.socket.emit('logout')
     }
   }
 })
