@@ -1,5 +1,7 @@
 <template>
-  <component :is="currentComponent"></component>
+  <transition name="scale">
+    <component :is="currentComponent"></component>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -19,9 +21,11 @@ export default Vue.extend({
   },
   data() {
     return {
-      currentComponent: 'connectWords',
+      currentComponent: 'ConnectWords',
       socket: io(this.$config?.apiURL, {
-        transports: ['websocket', 'flashsocket'],
+        transports: ['websocket'],
+        'reconnection': true,
+        'reconnectionAttempts': 2
       }),
     }
   },
@@ -32,6 +36,29 @@ export default Vue.extend({
     this.socket.on('logout', () => {
       this.$router.push('/')
     })
+    this.socket.io.on('reconnect_failed', () => {
+        console.log('reconnect_failed')
+    })
   },
 })
 </script>
+
+<style scoped>
+.scale-enter-active {
+  animation: bounce-in 1s;
+}
+
+.scale-leave-active {
+  animation: bounce-out .5s;
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0) }
+  100% { transform: scale(1) }
+}
+
+@keyframes bounce-out {
+  0% { transform: scale(1) }
+  100% { transform: scale(0) }
+}
+</style>

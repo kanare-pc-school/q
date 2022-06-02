@@ -11,15 +11,17 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <transition name="fadein">
-        <div v-show="this.question" class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      </transition>
+      <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
+        <transition name="fadein">
+          <div v-show="question" class="font-semibold" v-html="question"></div>
+        </transition>
+      </div>
       <transition-group name="fadein" tag="div" class="flex flex-col items-center mx-8 my-4">
         <div v-for="(user, i) in users" :key="i" class="relative flex items-center mt-4 mb-2 w-full">
           <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
           <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
           <transition-group name="message" tag="div" class="flex items-center">
-            <div v-for="(t, i) in user.text" :key="i">{{t}}</div>
+            <div v-for="(t, i) in user.text" :key="i" :class="{'text-xl': !visiblity}">{{hide(t)}}</div>
           </transition-group>
         </div>
       </transition-group>
@@ -60,7 +62,7 @@ export default Vue.extend({
       name: '',
       img: '',
       socket: io(this.$config?.apiURL, {
-        transports: ['websocket', 'flashsocket'],
+        transports: ['websocket'],
       }),
       question: '',
       text: '',
@@ -114,6 +116,7 @@ export default Vue.extend({
       }
     },
     hide(text: string): string {
+      if (this.visiblity) return text
       let kome = ''
       for(let i = 0; i < text.length; i++) {
         kome += '*'
@@ -135,10 +138,6 @@ footer {
 
 main {
   height: 80vh;
-}
-
-main > .question {
-  min-height: 7.5rem;
 }
 
 img.active {

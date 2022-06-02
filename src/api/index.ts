@@ -1,3 +1,5 @@
+import fs from 'fs'
+import path from 'path'
 import express from 'express'
 
 const app = express()
@@ -8,7 +10,6 @@ app.use(express.json())
 
 io.on('connection', (socket: any) => {
   socket.on('message', (user: string, text: string) => {
-    console.info(user, text)
     io.emit('message', user, text)
   })
   socket.on('question', (question: string) => {
@@ -29,9 +30,17 @@ io.on('connection', (socket: any) => {
   socket.on('logout', () => {
     io.emit('logout')
   })
+  socket.on('questions', () => {
+    const file = path.resolve(__dirname, '../../files', 'q.json')
+    if (!fs.existsSync(file)) return
+    const json = JSON.parse(fs.readFileSync(file, 'utf8'))
+    socket.emit('questions', json)
+  })
 })
 
-http.listen(process.env.API_PORT)
+http.listen(process.env.API_PORT, () => {
+  console.info('listening port ', process.env.API_PORT)
+})
 
 export default {
   path: '/api/',

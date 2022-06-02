@@ -6,62 +6,73 @@
         <span class="mx-4">管理者</span>
       </div>
       <div class="flex items-center justify-end w-full p-4 font-semibold">
-        <div :class="{active: mode === 'connectWords'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer" @click="chgMode('connectWords')">
+        <div :class="{active: mode === 'connectWords'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="chgMode('connectWords')">
           <font-awesome-icon :icon="['fa', 'tape']" />
         </div>
-        <div :class="{active: mode === 'lineUp'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer" @click="chgMode('lineUp')">
+        <div :class="{active: mode === 'lineUp'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="chgMode('lineUp')">
           <font-awesome-icon :icon="['fa', 'bars-staggered']" />
         </div>
-        <div :class="{active: mode === 'choiceAnswer'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer" @click="chgMode('choiceAnswer')">
+        <div :class="{active: mode === 'choiceAnswer'}" class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="chgMode('choiceAnswer')">
           <font-awesome-icon :icon="['fa', 'square-check']" />
         </div>
-        <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer" @click="visible">
+        <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="visible">
           <font-awesome-icon v-if="visiblity" :icon="['fa', 'eye']" />
           <font-awesome-icon v-else :icon="['fa', 'eye-slash']" />
         </div>
-        <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer" @click="trash">
+        <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mr-4 cursor-pointer bg-white" @click="trash">
           <font-awesome-icon :icon="['fa', 'trash']" />
         </div>
-        <div class="flex items-center justify-center shadow rounded-full h-10 w-10 cursor-pointer" @click="logout">
+        <div class="flex items-center justify-center shadow rounded-full h-10 w-10 cursor-pointer bg-white" @click="logout">
           <font-awesome-icon :icon="['fa', 'arrow-right-from-bracket']" />
         </div>
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <div class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      <div v-if="mode === 'connectWords'" class="flex flex-wrap items-center mx-8 my-4">
-        <div v-if="messages.length === 0"></div>
-        <div v-else v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
+      <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
+        <transition name="fadein">
+          <div v-show="question" class="font-semibold" v-html="question"></div>
+        </transition>
+      </div>
+      <transition-group name="message" v-if="mode === 'connectWords'" tag="div" class="flex flex-wrap items-center mx-8 my-4">
+        <div v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
           <span class="text-lg font-semibold">
-            <span :class="{trans: !visiblity}">{{ message.text }}</span>
+            <span v-if="visiblity">{{ message.text }}</span>
+            <span v-else class="opacity-50">{{ message.text }}</span>
             <span class="tooltip" :style="message.color">{{ message.user }}</span>
           </span>
         </div>
-      </div>
-      <div v-else-if="mode === 'lineUp'" class="flex flex-col items-center mx-8 my-4">
-        <div v-if="users.length === 0"></div>
-        <div v-else v-for="user in users" :key="user.id" class="relative flex items-center mt-4 mb-2 w-full">
-          <img class="mx-4 h-16 w-16" :src="user.img">
-          <div class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
-          <div :class="{trans: !visiblity}" class="break-all">{{user.text}}</div>
+      </transition-group>
+      <transition-group name="fadein" v-else-if="mode === 'lineUp'" tag="div" class="flex flex-col items-center mx-8 my-4">
+        <div v-for="(user, i) in users" :key="i" class="relative flex items-center mt-4 mb-2 w-full">
+          <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
+          <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
+          <transition-group name="message" tag="div" class="flex items-center">
+            <div v-for="(t, i) in user.text" :key="i">{{t}}</div>
+          </transition-group>
         </div>
-      </div>
-      <div v-else class="flex items-center mx-8 my-4">
-        <div v-if="users.length === 0"></div>
-        <div v-else v-for="user in users" :key="user.id" class="box">
-          <div class="h">
+      </transition-group>
+      <transition-group name="fadein" v-else tag="div" class="flex items-center mx-8 my-4">
+        <div v-for="(user, i) in users" :key="i" class="box">
+          <div :class="{active: user.name === name}" class="h">
             <img :src="user.img">
             <span>{{user.name}}</span>
           </div>
           <div class="b">
-            <span :class="{trans: !visiblity}">{{user.text}}</span>
-            <img :class="{hide: !user.correct}" class="circle" :src="require('@/assets/images/circle.svg')" />
+            <span v-if="visiblity">{{user.text}}</span>
+            <span v-else>?</span>
+            <img :class="{invisible: user.correct !== 1}" class="circle" :src="require('~/assets/images/circle.svg')" />
+            <img :class="{invisible: user.correct !== 2}" class="delete" :src="require('~/assets/images/delete.svg')" />
           </div>
         </div>
-      </div>
+      </transition-group>
     </main>
     <footer class="fixed bottom-0 flex items-center justify-center p-4 font-semibold w-full bg-gray-100">
-      <textarea v-model="text" class="appearance-none h-full w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" placeholder="もんだい" ref="text" @keydown.enter.shift="shiftEnter"></textarea>
+      <div class="flex flex-col items-center h-full w-full">
+        <textarea v-model="text" class="appearance-none h-full w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" placeholder="もんだい" ref="text" @keydown.enter.shift="shiftEnter"></textarea>
+        <div class="flex">
+          <div v-for="(q, i) in questions" :key="q.no" class="flex items-center justify-center shadow rounded-full h-8 w-8 mt-2 mr-4 cursor-pointer bg-white" @click="setQuestion(q.no, q.text)">{{(i + 1)}}</div>
+        </div>
+      </div>
       <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="submit">
         送信
       </button>
@@ -99,7 +110,7 @@ interface IUser {
   img: string,
   name: string,
   text: string,
-  correct: boolean,
+  correct: number,
 }
 
 export default Vue.extend({
@@ -115,12 +126,13 @@ export default Vue.extend({
       visiblity: boolean,
       mode: string,
       selected: string,
+      questions: any
   } {
     return {
       name: '',
       img: '',
       socket: io(this.$config?.apiURL, {
-        transports: ['websocket', 'flashsocket'],
+        transports: ['websocket'],
       }),
       question: '',
       text: '',
@@ -130,6 +142,7 @@ export default Vue.extend({
       visiblity: true,
       mode: 'connectWords',
       selected: '',
+      questions: []
     }
   },
   mounted() {
@@ -141,6 +154,9 @@ export default Vue.extend({
     this.socket.on('question', (question: string) => {
       this.question = question.replace(/\n/g,'<br/>')
     })
+    this.socket.on('questions', (questions: any) => {
+      this.questions = questions
+    })
     this.socket.on('trash', () => {
       this.question = ''
       if (this.mode === 'connectWords') {
@@ -149,7 +165,7 @@ export default Vue.extend({
       else {
         this.users.forEach((user: IUser) => {
           user.text = ''
-          user.correct = false
+          user.correct = 0
         })
         this.socket.emit('message', this.name, '')
         this.selected = ''
@@ -161,10 +177,14 @@ export default Vue.extend({
     this.socket.on('marking', (text: string) => {
       this.users.forEach((user: IUser) => {
         if (user.text === text) {
-          user.correct = true
+          user.correct = 1
+        }
+        else {
+          user.correct = 2
         }
       })
     })
+    this.socket.emit('questions')
     const m = this.$refs.text as HTMLInputElement
     m.focus()
   },
@@ -198,7 +218,7 @@ export default Vue.extend({
             img: this.$config.avatarURL + name + '.svg',
             name,
             text,
-            correct: false,
+            correct: 0,
           }
           this.users.push(user)
         } else {
@@ -235,6 +255,9 @@ export default Vue.extend({
       this.socket.emit('logout')
       location.reload()
     },
+    setQuestion(_num: number, question: string) {
+      this.text = question
+    }
   }
 })
 </script>
@@ -250,14 +273,6 @@ main {
 
 footer {
   height: 20vh;
-}
-
-main > .question {
-  min-height: 7.5rem;
-}
-
-.trans {
-  opacity: .2;
 }
 
 .tooltip {
@@ -333,16 +348,19 @@ main > .question {
     width: 100%;
 }
 
-.box .b .circle {
+.box .b .circle,
+.box .b .delete {
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
-    height: 150px;
-    width: 150px;
+    height: 120px;
+    width: 120px;
+    opacity: .7;
 }
 
-.box .b .circle.hide {
+.box .b .circle.invisible,
+.box .b .delete.invisible {
     display: none!important;
 }
 </style>

@@ -11,9 +11,11 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <transition name="fadein">
-        <div v-show="this.question" class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      </transition>
+      <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
+        <transition name="fadein">
+          <div v-show="question" class="font-semibold" v-html="question"></div>
+        </transition>
+      </div>
       <transition-group name="fadein" tag="div" class="flex items-center mx-8 my-4">
         <div v-for="(user, i) in users" :key="i" class="box">
           <div :class="{active: user.name === name}" class="h">
@@ -23,7 +25,8 @@
           <div class="b">
             <span v-if="visiblity">{{user.text}}</span>
             <span v-else>?</span>
-            <img :class="{hide: !user.correct}" class="circle" :src="require('@/assets/images/circle.svg')" />
+            <img :class="{hide: user.correct !== 1}" class="circle" :src="require('~/assets/images/circle.svg')" />
+            <img :class="{hide: user.correct !== 2}" class="delete" :src="require('~/assets/images/delete.svg')" />
           </div>
         </div>
       </transition-group>
@@ -59,7 +62,7 @@ interface IUser {
   img: string,
   name: string,
   text: string,
-  correct: boolean,
+  correct: number,
 }
 
 export default Vue.extend({
@@ -78,7 +81,7 @@ export default Vue.extend({
       name: '',
       img: '',
       socket: io(this.$config?.apiURL, {
-        transports: ['websocket', 'flashsocket'],
+        transports: ['websocket'],
       }),
       question: '',
       text: '',
@@ -87,11 +90,6 @@ export default Vue.extend({
       visiblity: true,
       selected: '',
     }
-  },
-  watch: {
-    selected: (u) => {
-      console.info(u)
-    } 
   },
   mounted() {
     this.name = (this.$route.query.name) as string
@@ -104,9 +102,10 @@ export default Vue.extend({
     })
     this.socket.on('trash', () => {
       this.question = ''
+      this.selected = ''
       this.users.forEach((user: IUser) => {
         user.text = ''
-        user.correct = false
+        user.correct = 0
       })
       this.socket.emit('message', this.name, '')
     })
@@ -116,7 +115,10 @@ export default Vue.extend({
     this.socket.on('marking', (text: string) => {
       this.users.forEach((user: IUser) => {
         if (user.text === text) {
-          user.correct = true
+          user.correct = 1
+        }
+        else {
+          user.correct = 2
         }
       })
     })
@@ -136,7 +138,7 @@ export default Vue.extend({
           img: this.$config.avatarURL + name + '.svg',
           name,
           text,
-          correct: false,
+          correct: 0,
         }
         this.users.push(user)
       } else {
@@ -158,10 +160,6 @@ footer {
 
 main {
   height: 80vh;
-}
-
-main > .question {
-  min-height: 7.5rem;
 }
 
 .active {
@@ -224,16 +222,19 @@ main > .question {
     width: 100%;
 }
 
-.box .b .circle {
+.box .b .circle,
+.box .b .delete {
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
-    height: 150px;
-    width: 150px;
+    height: 120px;
+    width: 120px;
+    opacity: .7;
 }
 
-.box .b .circle.hide {
+.box .b .circle.hide,
+.box .b .delete.hide {
     display: none!important;
 }
 </style>

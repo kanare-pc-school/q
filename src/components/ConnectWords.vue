@@ -11,9 +11,11 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <transition name="question">
-        <div v-show="this.question" class="question border rounded-lg m-4 p-4 font-semibold" v-html="question"></div>
-      </transition>
+      <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
+        <transition name="fadein">
+          <div v-show="question" class="font-semibold" v-html="question"></div>
+        </transition>
+      </div>
       <transition-group name="message" tag="div" class="flex flex-wrap items-center mx-8 my-4">
         <div v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
           <span class="text-lg font-semibold">
@@ -136,10 +138,6 @@ footer {
 
 main {
   height: 80vh;
-}
-
-main > .question {
-  min-height: 7.5rem;
 }
 
 .tooltip {
