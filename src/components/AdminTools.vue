@@ -38,10 +38,10 @@
       </div>
       <transition-group name="fadein" v-if="mode === 'edit'" tag="div" class="flex flex-col items-center mx-8 my-4">
         <div v-for="(q, i) in questions" :key="q.no" class="flex items-center mt-4 mb-2 w-full">
-          <div>{{q.no}}</div>
-          <textarea class="appearance-none h-full w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" ref="text">{{q.text}}</textarea>
-          <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button">
-            送信
+          <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mx-4">{{q.no}}</div>
+          <textarea v-model="questions[i].text" class="appearance-none h-full w-full rounded-lg border-2 text-gray-700 mr-3 p-4 leading-tight focus:outline-none"></textarea>
+          <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="update((i + 1), questions[i].text)">
+            更新
           </button>
         </div>
       </transition-group>
@@ -164,7 +164,12 @@ export default Vue.extend({
       this.show(name, text)
     })
     this.socket.on('question', (question: string) => {
-      this.question = question.replace(/\n/g,'<br/>')
+      if (question.toLowerCase().match(/\.(jpeg|jpg|png|bmp|gif)$/i)) {
+        this.question = '<img src="/files/' + question + '" />'
+      }
+      else {
+        this.question = question.replace(/\n/g,'<br/>')
+      }
     })
     this.socket.on('questions', (questions: any) => {
       this.questions = questions
@@ -206,6 +211,10 @@ export default Vue.extend({
       this.submit()
     },
     submit() {
+      if (this.mode === 'edit') {
+        this.update(this.questions.length + 1, this.text)
+        return
+      }
       this.socket.emit('question', this.text)
     },
     show(name: string, text: string) {
@@ -273,6 +282,13 @@ export default Vue.extend({
     edit() {
       this.mode = 'edit'
       this.socket.emit('logout')
+    },
+    update(i: number, text: string) {
+      if (this.questions.length < i) {
+        this.socket.emit('update', i, text)
+        return
+      }
+      this.socket.emit('update', i, text)
     }
   }
 })

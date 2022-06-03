@@ -31,10 +31,23 @@ io.on('connection', (socket: any) => {
     io.emit('logout')
   })
   socket.on('questions', () => {
-    const file = path.resolve(__dirname, '../../files', 'q.json')
-    if (!fs.existsSync(file)) return
-    const json = JSON.parse(fs.readFileSync(file, 'utf8'))
-    socket.emit('questions', json)
+    const questions = getQuestions()
+    socket.emit('questions', questions)
+  })
+  socket.on('update', (i: number, text: string) => {
+    const file = path.resolve(__dirname, '../static/files', 'q' + ('00' + i ).slice(-2) + '.json')
+    const question = {
+      no: i,
+      text
+    }
+    try {
+      fs.writeFileSync(file, JSON.stringify(question, null, 2))
+    } catch (e: any) {
+      throw new Error(e)
+    }
+
+    const questions = getQuestions()
+    socket.emit('questions', questions)
   })
 })
 
@@ -45,4 +58,20 @@ http.listen(process.env.API_PORT, () => {
 export default {
   path: '/api/',
   handler: app,
+}
+
+function getQuestions() {
+  const questions: any = []
+  const root = path.resolve(__dirname, '../static/files')
+  const files = fs.readdirSync(root)
+  if (typeof files === 'undefined') return
+  files.forEach((f) => {
+    if (fs.statSync(path.resolve(root, f)).isDirectory()) return true
+    if (path.extname(f) !== '.json') return true
+    const json = path.resolve(root, f)
+    if (!fs.existsSync(json)) return true
+    const question = JSON.parse(fs.readFileSync(json, 'utf8'))
+    questions.push(question)
+  })
+  return questions
 }

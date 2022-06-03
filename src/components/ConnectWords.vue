@@ -82,7 +82,12 @@ export default Vue.extend({
       this.show(name, text)
     })
     this.socket.on('question', (question: string) => {
-      this.question = question.replace(/\n/g,'<br/>')
+      if (question.toLowerCase().match(/\.(jpeg|jpg|png|bmp|gif)$/i)) {
+        this.question = '<img src="/files/' + question + '" />'
+      }
+      else {
+        this.question = question.replace(/\n/g,'<br/>')
+      }
     })
     this.socket.on('trash', () => {
       this.question = ''
