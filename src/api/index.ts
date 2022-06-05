@@ -52,7 +52,7 @@ io.on('connection', (socket: any) => {
 })
 
 http.listen(process.env.API_PORT, () => {
-  console.info('listening port ', process.env.API_PORT)
+  console.info('socket io listening port: ', process.env.API_PORT)
 })
 
 export default {

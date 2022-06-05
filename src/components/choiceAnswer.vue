@@ -1,23 +1,23 @@
 <template>
   <div class="relative">
-    <header class="sticky top-0 flex content-between w-full bg-gray-100">
+    <header class="sticky top-0 flex content-between w-full bg-gray-100 h-[10vh]">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
         <font-awesome-icon :icon="['fa', 'square-check']" />
         <span class="mx-4">せんたく</span>
       </div>
-      <div class="flex items-center justify-end w-full p-4 font-semibold">
+      <div v-show="name !== 'sc'" class="flex items-center justify-end w-full p-4 font-semibold">
         <img class="cursor-pointer shadow rounded-full h-10 w-10" :src="img" @click="logout">
         <span class="cursor-pointer mx-4" @click="logout">{{name}}</span>
       </div>
     </header>
-    <main class="sticky overflow-y-auto">
+    <main class="sticky overflow-y-auto h-[80vh]" :class="{'h-[90vh]': name === 'sc'}">
       <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
         <transition name="fadein">
           <div v-show="question" class="font-semibold" v-html="question"></div>
         </transition>
       </div>
-      <transition-group name="fadein" tag="div" class="flex items-center mx-8 my-4">
-        <div v-for="(user, i) in users" :key="i" class="box">
+      <transition-group name="fadein" tag="div" class="flex flex-wrap items-center mx-8 my-4">
+        <div v-for="(user, i) in users" :key="'u' + i" class="box">
           <div :class="{active: user.name === name}" class="h">
             <img :src="user.img">
             <span>{{user.name}}</span>
@@ -31,7 +31,7 @@
         </div>
       </transition-group>
     </main>
-    <footer class="fixed bottom-0 flex content-between w-full bg-gray-100">
+    <footer v-if="name !== 'sc'" class="fixed bottom-0 flex content-between w-full bg-gray-100 h-[10vh]">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
         <span class="mx-2">{{comments}}</span>
       </div>
@@ -135,7 +135,7 @@ export default Vue.extend({
       this.selected = text
     },
     show(name: string, text: string) {
-      if (!name) return
+      if (!name || name === 'sc') return
       const target = this.users.filter((user: IUser) => user.name === name)
       if (target.length === 0) {
         const user: IUser = {
@@ -158,15 +158,6 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-header,
-footer {
-  height: 10vh;
-}
-
-main {
-  height: 80vh;
-}
-
 .active {
   background-color: #e76f51!important;
   color: #fff!important;

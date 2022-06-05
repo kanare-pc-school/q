@@ -5,7 +5,7 @@
         <font-awesome-icon :icon="['fa', 'bars-staggered']" />
         <span class="mx-4">ならべる</span>
       </div>
-      <div class="flex items-center justify-end w-full p-4 font-semibold">
+      <div v-show="name !== 'sc'" class="flex items-center justify-end w-full p-4 font-semibold">
         <img class="cursor-pointer shadow rounded-full h-10 w-10" :src="img" @click="logout">
         <span class="cursor-pointer mx-4" @click="logout">{{name}}</span>
       </div>
@@ -17,16 +17,16 @@
         </transition>
       </div>
       <transition-group name="fadein" tag="div" class="flex flex-col items-center mx-8 my-4">
-        <div v-for="(user, i) in users" :key="i" class="relative flex items-center mt-4 mb-2 w-full">
+        <div v-for="(user, i) in users" :key="'u' + i" class="relative flex items-center mt-4 mb-2 w-full">
           <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
           <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
           <transition-group name="message" tag="div" class="flex items-center">
-            <div v-for="(t, i) in user.text" :key="i" :class="{'text-xl': !visiblity}">{{hide(t)}}</div>
+            <div v-for="(t, i) in user.text" :key="'t' + i" :class="{'text-xl': !visiblity}">{{hide(t)}}</div>
           </transition-group>
         </div>
       </transition-group>
     </main>
-    <footer class="fixed bottom-0 flex content-center w-full bg-gray-100">
+    <footer v-show="name !== 'sc'" class="fixed bottom-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-center w-full p-4 font-semibold">
         <input v-model="text" class="appearance-none w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" type="text" placeholder="メッセージ" @keydown.enter="submit" ref="text">
         <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="submit">
@@ -105,7 +105,7 @@ export default Vue.extend({
       this.text = ''
     },
     show(name: string, text: string) {
-      if (!name) return
+      if (!name || name === 'sc') return
       const target = this.users.filter((user: IUser) => user.name === name)
       if (target.length === 0) {
         const user: IUser = {

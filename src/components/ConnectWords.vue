@@ -5,7 +5,7 @@
         <font-awesome-icon :icon="['fa', 'tape']" />
         <span class="mx-4">つなげる</span>
       </div>
-      <div class="flex items-center justify-end w-full p-4 font-semibold">
+      <div v-show="name !== 'sc'" class="flex items-center justify-end w-full p-4 font-semibold">
         <img class="cursor-pointer shadow rounded-full h-10 w-10" :src="img" @click="logout">
         <span class="cursor-pointer mx-4" @click="logout">{{name}}</span>
       </div>
@@ -17,7 +17,7 @@
         </transition>
       </div>
       <transition-group name="message" tag="div" class="flex flex-wrap items-center mx-8 my-4">
-        <div v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
+        <div v-for="message in messages" :key="'m' + message.id" class="relative mt-8 mx-4 p-6">
           <span class="text-lg font-semibold">
             <span v-if="visiblity">{{ message.text }}</span>
             <span v-else>{{ hide(message.text) }}</span>
@@ -26,7 +26,7 @@
         </div>
       </transition-group>
     </main>
-    <footer class="fixed bottom-0 flex content-between w-full bg-gray-100">
+    <footer v-show="name !== 'sc'" class="fixed bottom-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
         <span class="mx-2">{{comments}}</span>
       </div>
@@ -105,7 +105,7 @@ export default Vue.extend({
       this.text = ''
     },
     show(name: string, text: string) {
-      if (text === '') return
+      if (!name || name === 'sc') return
       const message: IMessage = {
         id: this.messages.length + 1,
         user: name,

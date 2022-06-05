@@ -16,6 +16,7 @@
           <div v-if="!$v.name.maxLength" class="error">Name must have at most {{$v.name.$params.maxLength.max}} letters.</div>
         </form>
       </div>
+      <div class="fixed bottom-8 right-8 opacity-30 cursor-pointer" @click="$router.push('/admin')"><font-awesome-icon :icon="['fa', 'user-tie']" /></div>
     </div>
   </div>
 </template>

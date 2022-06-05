@@ -37,7 +37,7 @@
         </transition>
       </div>
       <transition-group name="fadein" v-if="mode === 'edit'" tag="div" class="flex flex-col items-center mx-8 my-4">
-        <div v-for="(q, i) in questions" :key="q.no" class="flex items-center mt-4 mb-2 w-full">
+        <div v-for="(q, i) in questions" :key="'q' + i" class="flex items-center mt-4 mb-2 w-full">
           <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mx-4">{{q.no}}</div>
           <textarea v-model="questions[i].text" class="appearance-none h-full w-full rounded-lg border-2 text-gray-700 mr-3 p-4 leading-tight focus:outline-none"></textarea>
           <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="update((i + 1), questions[i].text)">
@@ -46,7 +46,7 @@
         </div>
       </transition-group>
       <transition-group name="message" v-else-if="mode === 'connectWords'" tag="div" class="flex flex-wrap items-center mx-8 my-4">
-        <div v-for="message in messages" :key="message.id" class="relative mt-8 mx-4 p-6">
+        <div v-for="message in messages" :key="'m' + message.id" class="relative mt-8 mx-4 p-6">
           <span class="text-lg font-semibold">
             <span v-if="visiblity">{{ message.text }}</span>
             <span v-else class="opacity-50">{{ message.text }}</span>
@@ -55,23 +55,22 @@
         </div>
       </transition-group>
       <transition-group name="fadein" v-else-if="mode === 'lineUp'" tag="div" class="flex flex-col items-center mx-8 my-4">
-        <div v-for="(user, i) in users" :key="i" class="relative flex items-center mt-4 mb-2 w-full">
+        <div v-for="(user, i) in users" :key="'u' + i" class="relative flex items-center mt-4 mb-2 w-full">
           <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
           <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
           <transition-group name="message" tag="div" class="flex items-center">
-            <div v-for="(t, i) in user.text" :key="i">{{t}}</div>
+            <div v-for="(t, i) in user.text" :key="'t' + i">{{t}}</div>
           </transition-group>
         </div>
       </transition-group>
       <transition-group name="fadein" v-else tag="div" class="flex items-center mx-8 my-4">
-        <div v-for="(user, i) in users" :key="i" class="box">
+        <div v-for="(user, i) in users" :key="'u' + i" class="box">
           <div :class="{active: user.name === name}" class="h">
             <img :src="user.img">
             <span>{{user.name}}</span>
           </div>
           <div class="b">
-            <span v-if="visiblity">{{user.text}}</span>
-            <span v-else>?</span>
+            <span :class="{'opacity-30': !visiblity}">{{user.text}}</span>
             <img :class="{invisible: user.correct !== 1}" class="circle" :src="require('~/assets/images/circle.svg')" />
             <img :class="{invisible: user.correct !== 2}" class="delete" :src="require('~/assets/images/delete.svg')" />
           </div>
@@ -79,27 +78,32 @@
       </transition-group>
     </main>
     <footer class="fixed bottom-0 flex items-center justify-center p-4 font-semibold w-full bg-gray-100">
-      <div class="flex flex-col items-center h-full w-full">
-        <textarea v-model="text" class="appearance-none h-full w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" placeholder="もんだい" ref="text" @keydown.enter.shift="shiftEnter"></textarea>
-        <div class="flex">
-          <div v-for="(q, i) in questions" :key="q.no" class="flex items-center justify-center shadow rounded-full h-8 w-8 mt-2 mr-4 cursor-pointer bg-white" @click="setQuestion(q.no, q.text)">{{(i + 1)}}</div>
+      <div class="flex flex-col items-center h-full grow">
+        <div class="flex flex-nowrap items-center justify-center h-full w-full">
+          <textarea v-show="!picture" v-model="text" class="appearance-none h-full w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" placeholder="もんだい" @keydown.enter.shift="shiftEnter"></textarea>
+          <img v-show="picture" :src="picture" class="pic">
+          <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg ml-2" type="button" @click="submit">送信</button>
+        </div>
+        <div class="flex flex-nowrap items-center justify-center">
+          <div v-for="(q, i) in questions" :key="'q' + i" class="flex items-center justify-center shadow rounded-full h-8 w-8 mt-2 mr-4 cursor-pointer bg-white" @click="setQuestion(q.no, q.text)">{{(i + 1)}}</div>
         </div>
       </div>
-      <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="submit">
-        送信
-      </button>
-      <div v-show="mode === 'choiceAnswer'" class="flex items-center justify-end w-full p-4 font-semibold">
-        <div :class="{active: selected === 'ア'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 cursor-pointer" @click="marking('ア')">
-          ア
+      <div v-show="mode === 'choiceAnswer'" class="flex flex-col flex-nowrap items-center justify-end pl-8 py-2 grow-0">
+        <div class="flex flex-row flex-nowrap items-center justify-end">
+          <div :class="{active: selected === 'ア'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 font-semibold cursor-pointer" @click="marking('ア')">
+            ア
+          </div>
+          <div :class="{active: selected === 'イ'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 font-semibold cursor-pointer" @click="marking('イ')">
+            イ
+          </div>
         </div>
-        <div :class="{active: selected === 'イ'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 cursor-pointer" @click="marking('イ')">
-          イ
-        </div>
-        <div :class="{active: selected === 'ウ'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 cursor-pointer" @click="marking('ウ')">
-          ウ
-        </div>
-        <div :class="{active: selected === 'エ'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 cursor-pointer" @click="marking('エ')">
-          エ
+        <div class="flex flex-nowrap items-center justify-end">
+          <div :class="{active: selected === 'ウ'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 font-semibold cursor-pointer" @click="marking('ウ')">
+            ウ
+          </div>
+          <div :class="{active: selected === 'エ'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 font-semibold cursor-pointer" @click="marking('エ')">
+            エ
+          </div>
         </div>
       </div>
     </footer>
@@ -132,6 +136,7 @@ export default Vue.extend({
       socket: any,
       question: string,
       text: string,
+      picture: string,
       comments: string,
       messages: IMessage[],
       users: IUser[],
@@ -148,6 +153,7 @@ export default Vue.extend({
       }),
       question: '',
       text: '',
+      picture: '',
       comments: '',
       messages: [],
       users: [],
@@ -176,6 +182,8 @@ export default Vue.extend({
     })
     this.socket.on('trash', () => {
       this.question = ''
+      this.text = ''
+      this.picture = ''
       if (this.mode === 'connectWords') {
         this.messages = []
       }
@@ -202,8 +210,6 @@ export default Vue.extend({
       })
     })
     this.socket.emit('questions')
-    const m = this.$refs.text as HTMLInputElement
-    m.focus()
   },
   methods: {
     shiftEnter(e: any) {
@@ -231,7 +237,7 @@ export default Vue.extend({
         if (main) main.scrollTop = main.scrollHeight
       }
       else {
-        if (!name) return
+        if (!name || name === 'sc') return
         const target = this.users.filter((user: IUser) => user.name === name)
         if (target.length === 0) {
           const user: IUser = {
@@ -267,6 +273,9 @@ export default Vue.extend({
     chgMode(mode: string) {
       this.socket.emit('mode', mode)
       this.mode = mode
+      this.question = ''
+      this.text = ''
+      this.picture = ''
     },
     marking(text: string) {
       this.socket.emit('marking', text)
@@ -277,7 +286,14 @@ export default Vue.extend({
       location.reload()
     },
     setQuestion(_num: number, question: string) {
-      this.text = question
+      if (question.toLowerCase().match(/\.(jpeg|jpg|png|bmp|gif)$/i)) {
+        this.text = question
+        this.picture = '/files/' + question
+      }
+      else {
+        this.text = question
+        this.picture = ''
+      }
     },
     edit() {
       this.mode = 'edit'
@@ -394,5 +410,9 @@ footer {
 .box .b .circle.invisible,
 .box .b .delete.invisible {
     display: none!important;
+}
+
+.pic {
+  height: calc(20vh - 5rem);
 }
 </style>
