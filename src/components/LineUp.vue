@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <header class="sticky top-0 flex content-between w-full bg-gray-100">
+    <header v-if="!question" class="sticky top-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
         <font-awesome-icon :icon="['fa', 'bars-staggered']" />
         <span class="mx-4">ならべる</span>
@@ -11,11 +11,9 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
-        <transition name="fadein">
-          <div v-show="question" class="font-semibold" v-html="question"></div>
-        </transition>
-      </div>
+      <transition name="fadein">
+        <div v-show="question" class="font-semibold border rounded-lg m-4 p-4 min-h-[7.5rem]" v-html="question"></div>
+      </transition>
       <transition-group name="fadein" tag="div" class="flex flex-col items-center mx-8 my-4">
         <div v-for="(user, i) in users" :key="'u' + i" class="relative flex items-center mt-4 mb-2 w-full">
           <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">

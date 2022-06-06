@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <header class="sticky top-0 flex content-between w-full bg-gray-100">
+    <header v-if="!question" class="sticky top-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
         <font-awesome-icon :icon="['fa', 'tape']" />
         <span class="mx-4">つなげる</span>
@@ -11,13 +11,11 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto">
-      <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
-        <transition name="fadein">
-          <div v-show="question" class="font-semibold" v-html="question"></div>
-        </transition>
-      </div>
-      <transition-group name="message" tag="div" class="flex flex-wrap items-center mx-8 my-4">
-        <div v-for="message in messages" :key="'m' + message.id" class="relative mt-8 mx-4 p-6">
+      <transition name="fadein">
+        <div v-show="question" class="font-semibold border rounded-lg m-4 p-4 min-h-[7.5rem]" v-html="question"></div>
+      </transition>
+      <transition-group name="message" tag="div" class="flex flex-wrap items-center mx-8 my-2">
+        <div v-for="message in messages" :key="'m' + message.id" class="relative mb-8 mx-4 px-6 py-4">
           <span class="text-lg font-semibold">
             <span v-if="visiblity">{{ message.text }}</span>
             <span v-else>{{ hide(message.text) }}</span>
@@ -27,10 +25,7 @@
       </transition-group>
     </main>
     <footer v-show="name !== 'sc'" class="fixed bottom-0 flex content-between w-full bg-gray-100">
-      <div class="flex items-center justify-start w-full p-4 font-semibold">
-        <span class="mx-2">{{comments}}</span>
-      </div>
-      <div class="flex items-center justify-end w-full p-4 font-semibold">
+      <div class="flex items-center justify-center w-full p-4 font-semibold">
         <input v-model="text" class="appearance-none w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" type="text" placeholder="メッセージ" @keydown.enter="submit" ref="text">
         <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="submit">
           送信

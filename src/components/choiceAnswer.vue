@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <header class="sticky top-0 flex content-between w-full bg-gray-100 h-[10vh]">
+    <header v-if="!question" class="sticky top-0 flex content-between w-full bg-gray-100 h-[10vh]">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
         <font-awesome-icon :icon="['fa', 'square-check']" />
         <span class="mx-4">せんたく</span>
@@ -11,12 +11,10 @@
       </div>
     </header>
     <main class="sticky overflow-y-auto h-[80vh]" :class="{'h-[90vh]': name === 'sc'}">
-      <div class="border rounded-lg m-4 p-4 min-h-[7.5rem]">
-        <transition name="fadein">
-          <div v-show="question" class="font-semibold" v-html="question"></div>
-        </transition>
-      </div>
-      <transition-group name="fadein" tag="div" class="flex flex-wrap items-center mx-8 my-4">
+      <transition name="fadein">
+        <div v-show="question" class="font-semibold border rounded-lg m-4 p-4 min-h-[7.5rem]" v-html="question"></div>
+      </transition>
+      <transition-group name="fadein" tag="div" class="flex flex-wrap items-center mx-2 my-4">
         <div v-for="(user, i) in users" :key="'u' + i" class="box">
           <div :class="{active: user.name === name}" class="h">
             <img :src="user.img">
@@ -33,9 +31,6 @@
     </main>
     <footer v-if="name !== 'sc'" class="fixed bottom-0 flex content-between w-full bg-gray-100 h-[10vh]">
       <div class="flex items-center justify-start w-full p-4 font-semibold">
-        <span class="mx-2">{{comments}}</span>
-      </div>
-      <div class="flex items-center justify-end w-full p-4 font-semibold">
         <div :class="{active: selected === 'ア'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 cursor-pointer" @click="submit('ア')">
           ア
         </div>
@@ -48,6 +43,9 @@
         <div :class="{active: selected === 'エ'}" class="flex items-center justify-center shadow rounded-full h-16 w-16 mr-4 cursor-pointer" @click="submit('エ')">
           エ
         </div>
+      </div>
+      <div class="flex items-center justify-center w-full p-4 font-semibold">
+        <span class="mx-2">{{comments}}</span>
       </div>
     </footer>
   </div>
@@ -171,8 +169,8 @@ export default Vue.extend({
     box-shadow: 0px 2px 2px rgba(0, 0, 0, .4);
     max-height: 240px;
     max-width: 240px;
-    height: 40vw;
-    width: 40vw;
+    height: 38vw;
+    width: 38vw;
 }
 
 .box .h {
