@@ -17,7 +17,7 @@
       <transition-group name="fadein" tag="div" class="flex flex-col items-center mx-8 my-4">
         <div v-for="(user, i) in users" :key="'u' + i" class="relative flex items-center mt-4 mb-2 w-full">
           <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
-          <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
+          <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[10vw] max-w-[140px]">{{user.name}}</div>
           <transition-group name="message" tag="div" class="flex items-center">
             <div v-for="(t, i) in user.text" :key="'t' + i" :class="{'text-xl': !visiblity}">{{hide(t)}}</div>
           </transition-group>

@@ -18,7 +18,7 @@
         <div :class="{active: mode === 'edit'}"  class="flex items-center justify-center shadow rounded-full h-10 w-10 px-4 mr-8 cursor-pointer bg-white" @click="edit">
           <font-awesome-icon :icon="['fa', 'file-pen']" />
         </div>
-        <div :class="{active: !visiblity}" class="flex items-center justify-center shadow rounded-full h-10 w-10 px-4 mr-4 cursor-pointer bg-white" @click="visible">
+        <div :class="{active: !visiblity}" class="flex items-center justify-center shadow rounded-full h-10 w-10 px-4 mr-4 cursor-pointer bg-white" @click="visible(!visiblity)">
           <font-awesome-icon v-if="visiblity" :icon="['fa', 'eye']" />
           <font-awesome-icon v-else :icon="['fa', 'eye-slash']" />
         </div>
@@ -264,8 +264,8 @@ export default Vue.extend({
     trash() {
       this.socket.emit('trash')
     },
-    visible() {
-      this.visiblity = !this.visiblity 
+    visible(visiblity: boolean) {
+      this.visiblity = visiblity
       this.socket.emit('visible', this.visiblity)
     },
     chgMode(mode: string) {
@@ -279,6 +279,8 @@ export default Vue.extend({
     marking(text: string) {
       this.socket.emit('marking', text)
       this.selected = text
+
+      this.visible(true)
     },
     logout() {
       this.socket.emit('logout')

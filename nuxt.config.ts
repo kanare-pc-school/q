@@ -40,13 +40,13 @@ export default {
         }
     },
 
-    serverMiddleware: [
-        { path: '/api/', handler: '~/api/index.ts' },
-    ],
+    // serverMiddleware: [
+    //     { path: '/api/', handler: '~/api/index.ts' },
+    // ],
 
-    proxy: {
-        '/api': process.env.API_URL,
-    },
+    // proxy: {
+    //     '/api': process.env.API_URL,
+    // },
 
     // Modules: https://go.nuxtjs.dev/config-modules
     modules: [],

@@ -21,7 +21,7 @@
             <span>{{user.name}}</span>
           </div>
           <div class="b">
-            <span v-if="visiblity">{{user.text}}</span>
+            <span v-if="visiblity || user.name === name">{{user.text}}</span>
             <span v-else>?</span>
             <img :class="{hide: user.correct !== 1}" class="circle" :src="require('~/assets/images/circle.svg')" />
             <img :class="{hide: user.correct !== 2}" class="delete" :src="require('~/assets/images/delete.svg')" />
