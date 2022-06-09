@@ -26,7 +26,7 @@
     </main>
     <footer v-show="name !== 'sc'" class="fixed bottom-0 flex content-between w-full bg-gray-100">
       <div class="flex items-center justify-center w-full p-4 font-semibold">
-        <input v-model="text" class="appearance-none w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" type="text" placeholder="メッセージ" @keydown.enter="submit" ref="text">
+        <input ref="text" v-model="text" class="appearance-none w-full rounded-lg border-none text-gray-700 mr-3 p-4 leading-tight focus:outline-none" type="text" placeholder="メッセージ" @keydown.enter="submit">
         <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 border-4 text-white px-6 py-2 rounded-lg" type="button" @click="submit">
           送信
         </button>
@@ -78,7 +78,7 @@ export default Vue.extend({
     })
     this.socket.on('question', (question: string) => {
       if (question.toLowerCase().match(/\.(jpeg|jpg|png|bmp|gif)$/i)) {
-        this.question = '<img src="/files/' + question + '" />'
+        this.question = '<img src="' + question + '" />'
       }
       else {
         this.question = question.replace(/\n/g,'<br/>')

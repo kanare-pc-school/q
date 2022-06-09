@@ -16,7 +16,7 @@ export default {
 
     // Global CSS: https://go.nuxtjs.dev/config-css
     css: [
-        '~/assets/css/main.css'
+        '~/assets/css/main.css', '~/assets/css/style.css'
     ],
 
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -40,14 +40,6 @@ export default {
         }
     },
 
-    // serverMiddleware: [
-    //     { path: '/api/', handler: '~/api/index.ts' },
-    // ],
-
-    // proxy: {
-    //     '/api': process.env.API_URL,
-    // },
-
     // Modules: https://go.nuxtjs.dev/config-modules
     modules: [],
 
@@ -64,7 +56,7 @@ export default {
     srcDir: 'src/',
 
     server: {
-        port: process.env.BASE_PORT,
+        port: process.env.PORT || '8080',
         host: '0.0.0.0',
     },
 
@@ -73,7 +65,5 @@ export default {
         apiURL: process.env.API_URL,
         avatarURL: process.env.AVATAR_URL,
     },
-    privateRuntimeConfig: {
-        secret: process.env.SECRET_KEY,
-    }
+    privateRuntimeConfig: {}
 }

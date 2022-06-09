@@ -34,7 +34,7 @@
       <transition name="fadein">
         <div v-show="question" class="font-semibold border rounded-lg m-4 p-4 min-h-[7.5rem]" v-html="question"></div>
       </transition>
-      <transition-group name="fadein" v-if="mode === 'edit'" tag="div" class="flex flex-col items-center mx-8 my-4">
+      <transition-group v-if="mode === 'edit'" name="fadein" tag="div" class="flex flex-col items-center mx-8 my-4">
         <div v-for="(q, i) in questions" :key="'q' + i" class="flex items-center mt-4 mb-2 w-full">
           <div class="flex items-center justify-center shadow rounded-full h-10 w-10 mx-4">{{('00' + i ).slice(-2)}}</div>
           <textarea v-model="questions[i].text" class="appearance-none h-full w-full rounded-lg border-2 text-gray-700 mr-3 p-4 leading-tight focus:outline-none"></textarea>
@@ -43,7 +43,7 @@
           </button>
         </div>
       </transition-group>
-      <transition-group name="message" v-else-if="mode === 'connectWords'" tag="div" class="flex flex-wrap items-center mx-8 my-2">
+      <transition-group v-else-if="mode === 'connectWords'" name="message" tag="div" class="flex flex-wrap items-center mx-8 my-2">
         <div v-for="message in messages" :key="'m' + message.id" class="relative mb-8 mx-4 px-6 py-4">
           <span class="text-lg font-semibold">
             <span v-if="visiblity">{{ message.text }}</span>
@@ -52,7 +52,7 @@
           </span>
         </div>
       </transition-group>
-      <transition-group name="fadein" v-else-if="mode === 'lineUp'" tag="div" class="flex flex-col items-center mx-8 my-4">
+      <transition-group v-else-if="mode === 'lineUp'" name="fadein" tag="div" class="flex flex-col items-center mx-8 my-4">
         <div v-for="(user, i) in users" :key="'u' + i" class="relative flex items-center mt-4 mb-2 w-full">
           <img :class="{active: user.name === name}" class="mx-4 h-16 w-16" :src="user.img">
           <div :class="{active: user.name === name}" class="text-ellipsis overflow-hidden mr-4 min-w-[140px]">{{user.name}}</div>
@@ -61,7 +61,7 @@
           </transition-group>
         </div>
       </transition-group>
-      <transition-group name="fadein" v-else tag="div" class="flex flex-wrap items-center mx-2 my-4">
+      <transition-group v-else name="fadein" tag="div" class="flex flex-wrap items-center mx-2 my-4">
         <div v-for="(user, i) in users" :key="'u' + i" class="box">
           <div :class="{active: user.name === name}" class="h">
             <img :src="user.img">
@@ -169,7 +169,7 @@ export default Vue.extend({
     })
     this.socket.on('question', (question: string) => {
       if (question.toLowerCase().match(/\.(jpeg|jpg|png|bmp|gif)$/i)) {
-        this.question = '<img src="/files/' + question + '" />'
+        this.question = '<img src="' + question + '" />'
       }
       else {
         this.question = question.replace(/\n/g,'<br/>')
@@ -245,15 +245,13 @@ export default Vue.extend({
             text,
             correct: 0,
           }
-          this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);this.users.push(user);
-        } else {
-          if (this.mode === 'lineUp') {
-            target[0].text = target[0].text + text
+          this.users.push(user)
+        } else if (this.mode === 'lineUp') {
+            target[0].text += text
           }
           else {
             target[0].text = text
           }
-        }
       }
     },
     getColor(user: string) {
@@ -289,7 +287,7 @@ export default Vue.extend({
     setQuestion(_num: number, question: string) {
       if (question.toLowerCase().match(/\.(jpeg|jpg|png|bmp|gif)$/i)) {
         this.text = question
-        this.picture = '/files/' + question
+        this.picture = question
       }
       else {
         this.text = question
