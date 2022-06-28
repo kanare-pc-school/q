@@ -47,6 +47,16 @@ interface IMessage {
 }
 
 export default Vue.extend({
+  props: {
+    propsName: {
+      type: String,
+      required: true,
+    },
+    propsImg: {
+      type: String,
+      required: true,
+    },
+  },
   data(): {
       name: string,
       img: string,
@@ -58,10 +68,10 @@ export default Vue.extend({
       visiblity: boolean,
   } {
     return {
-      name: '',
-      img: '',
+      name: this.$props.name,
+      img: this.$props.Img,
       socket: io(this.$config?.apiURL, {
-        transports: ['websocket', 'flashsocket'],
+        transports: ['websocket'],
       }),
       question: '',
       text: '',
@@ -100,7 +110,7 @@ export default Vue.extend({
       this.text = ''
     },
     show(name: string, text: string) {
-      if (!name || name === 'sc') return
+      if (!name || name === 'sc' || text === '') return
       const message: IMessage = {
         id: this.messages.length + 1,
         user: name,

@@ -64,6 +64,16 @@ interface IUser {
 }
 
 export default Vue.extend({
+  props: {
+    propsName: {
+      type: String,
+      required: true,
+    },
+    propsImg: {
+      type: String,
+      required: true,
+    },
+  },
   data(): {
       name: string,
       img: string,
@@ -76,8 +86,8 @@ export default Vue.extend({
       selected: string,
   } {
     return {
-      name: '',
-      img: '',
+      name: this.$props.name,
+      img: this.$props.Img,
       socket: io(this.$config?.apiURL, {
         transports: ['websocket'],
       }),
@@ -90,8 +100,6 @@ export default Vue.extend({
     }
   },
   mounted() {
-    this.name = (this.$route.query.name) as string
-    this.img = this.$config.avatarURL + this.name + '.svg'
     this.socket.on('message', (name: string, text: string) => {
       this.show(name, text)
     })

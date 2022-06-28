@@ -46,6 +46,16 @@ interface IUser {
 }
 
 export default Vue.extend({
+  props: {
+    propsName: {
+      type: String,
+      required: true,
+    },
+    propsImg: {
+      type: String,
+      required: true,
+    },
+  },
   data(): {
       name: string,
       img: string,
@@ -57,8 +67,8 @@ export default Vue.extend({
       visiblity: boolean,
   } {
     return {
-      name: '',
-      img: '',
+      name: this.$props.name,
+      img: this.$props.Img,
       socket: io(this.$config?.apiURL, {
         transports: ['websocket'],
       }),

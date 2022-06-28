@@ -1,6 +1,6 @@
 <template>
   <transition name="scale">
-    <component :is="currentComponent"></component>
+    <component :is="currentComponent" :props-name="name" :props-img="img"></component>
   </transition>
 </template>
 
@@ -10,7 +10,8 @@ import { io } from 'socket.io-client'
 
 import connectWords from '../components/ConnectWords.vue'
 import lineUp from '../components/LineUp.vue'
-import choiceAnswer from '../components/choiceAnswer.vue'
+import choiceAnswer from '../components/ChoiceAnswer.vue'
+import youtubeLive from '../components/YoutubeLive.vue'
 
 export default Vue.extend({
   name: 'UserPage',
@@ -18,22 +19,29 @@ export default Vue.extend({
     connectWords,
     lineUp,
     choiceAnswer,
+    youtubeLive,
   },
   data() {
     return {
-      currentComponent: 'ConnectWords',
+      currentComponent: 'connectWords',
       socket: io(this.$config?.apiURL, {
         transports: ['websocket'],
         'reconnection': true,
         'reconnectionAttempts': 2
       }),
+      name: '',
+      img: '',
     }
   },
   mounted() {
+    this.name = (this.$route.query.name) as string
+    this.img = this.$config.avatarURL + this.name + '.svg'
+    if (this.name !== 'sc') this.currentComponent = 'youtubeLive'
     this.socket.on('mode', (mode: string) => {
-      this.currentComponent = mode
+      if (this.name === 'sc') this.currentComponent = mode
     })
     this.socket.on('logout', () => {
+      this.socket.disconnect()
       this.$router.push('/')
     })
     this.socket.io.on('reconnect_failed', () => {
