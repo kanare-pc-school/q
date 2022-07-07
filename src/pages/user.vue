@@ -1,6 +1,10 @@
 <template>
   <transition name="scale">
-    <component :is="currentComponent" :props-name="name" :props-img="img"></component>
+    <component
+      :is="currentComponent"
+      :props-name="name"
+      :props-img="img"
+    ></component>
   </transition>
 </template>
 
@@ -26,26 +30,28 @@ export default Vue.extend({
       currentComponent: 'connectWords',
       socket: io(this.$config?.apiURL, {
         transports: ['websocket'],
-        'reconnection': true,
-        'reconnectionAttempts': 2
+        reconnection: true,
+        reconnectionAttempts: 2,
       }),
       name: '',
       img: '',
     }
   },
   mounted() {
-    this.name = (this.$route.query.name) as string
+    this.name = this.$route.query.name as string
     this.img = this.$config.avatarURL + this.name + '.svg'
-    if (this.name !== 'sc') this.currentComponent = 'youtubeLive'
+    if (this.name !== 'sc' && this.$config.mId)
+      this.currentComponent = 'youtubeLive'
     this.socket.on('mode', (mode: string) => {
-      if (this.name === 'sc') this.currentComponent = mode
+      if (this.name === 'sc' || this.$config.mId === '')
+        this.currentComponent = mode
     })
     this.socket.on('logout', () => {
       this.socket.disconnect()
       this.$router.push('/')
     })
     this.socket.io.on('reconnect_failed', () => {
-        console.log('reconnect_failed')
+      console.log('reconnect_failed')
     })
   },
 })
@@ -57,16 +63,24 @@ export default Vue.extend({
 }
 
 .scale-leave-active {
-  animation: bounce-out .5s;
+  animation: bounce-out 0.5s;
 }
 
 @keyframes bounce-in {
-  0% { transform: scale(0) }
-  100% { transform: scale(1) }
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes bounce-out {
-  0% { transform: scale(1) }
-  100% { transform: scale(0) }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
 }
 </style>
